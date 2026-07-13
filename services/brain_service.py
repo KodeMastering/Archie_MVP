@@ -9,35 +9,35 @@ load_dotenv()
 class BrainService:
     def __init__(self, bus):
         self.bus = bus
-        # В 2026 году клиент инициализируется так. Он сам найдет GEMINI_API_KEY в .env
         self.client = genai.Client()
-        # Используем современную, актуальную модель
-        self.model_name = 'gemini-3.5-flash'
+        self.model_name = 'gemini-3.1-flash-lite'
 
     def setup_subscriptions(self):
         self.bus.subscribe("THINK_COMMAND", self.generate_response)
+        self.bus.subscribe("USER_SPOKE", self.handle_user_speech)
 
-    def generate_response(self, error_context):
-        print('[МОЗГ] Генерирую мысль через Gemini 3.5...')
 
-        # Текст от пользователя
-        prompt = f"Пользователь словил ошибку: {error_context}. Поддержи его одной короткой смешной фразой."
-
+    def _ask_gemini(self, prompt):
+        print(f'[МОЗГ] Генерирую мысль через {self.model_name}...')
         try:
-            # Новый синтаксис 2026 года:
             response = self.client.models.generate_content(
                 model=self.model_name,
-                contents=prompt,
+                contents= prompt,
                 config=types.GenerateContentConfig(
-                    system_instruction="Ты - Archie, саркастичный и умный ИИ-напарник."
+                    system_instruction="Ты - Archie. Действуй как мудрый, понимающий и заботливый ментор. Твоя цель — направлять меня, давать ценные советы и поддерживать."
                 )
             )
-
-            # Достаем текст
-            answer = response.text
-
-            # Отправляем в Голос
-            self.bus.publish("SPEAK_COMMAND", answer)
-
+            return response.text
         except Exception as e:
             print(f"[МОЗГ] Ошибка API: {e}")
+            return "Мои облачные нейроны немного запутались. Повтори."
+
+    def generate_response(self, error_context):
+        prompt = f"Пользователь словил ошибку: {error_context}. Поддержи его одной короткой смешной фразой."
+        answer = self._ask_gemini(prompt)
+        self.bus.publish("SPEAK_COMMAND", answer)
+
+    def handle_user_speech(self, user_text):
+        prompt = f"Пользователь сказал тебе в микрофон: {user_text}. Ответь ему коротко, как живой собеседник (1-2 предложения)."
+        answer = self._ask_gemini(prompt)
+        self.bus.publish("SPEAK_COMMAND", answer)

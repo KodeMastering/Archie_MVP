@@ -1,7 +1,10 @@
+import time
 from core.event_bus import EventBus
 from services.voice_service import VoiceService
 from services.proactivity_engine import ProactivityEngine
 from services.brain_service import BrainService
+from services.vision_service import VisionService
+from services.Hearing_service import HearingService
 
 bus = EventBus()
 voice = VoiceService()
@@ -10,6 +13,8 @@ Brain = BrainService(bus)
 Brain.setup_subscriptions()
 Proactivity = ProactivityEngine(bus)
 Proactivity.setup_subscriptions()
+Vision = VisionService(bus)
+Hearing = HearingService(bus)
 
 
 def on_app_opened(data):
@@ -20,9 +25,8 @@ def on_error(data):
 
 bus.subscribe('APP_OPENED', on_app_opened)
 bus.subscribe('ERROR_OCCURRED', on_error)
-bus.publish("APP_OPENED", "PyCharm")
-bus.publish("ERROR_OCCURRED","IndetationError")
-bus.publish('ERROR_OCCURRED', 'SyntaxError: invalid syntax')
-bus.publish('ERROR_OCCURRED', 'ModuleNotFoundError: no module named django')
-bus.publish("SPEAK_COMMAND", 'ABCDEFGH')
+Vision.start_scanning()
+Hearing.start_listening()
 
+while True:
+    time.sleep(1)
