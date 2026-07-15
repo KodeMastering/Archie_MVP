@@ -24,7 +24,7 @@ class BrainService:
                 model=self.model_name,
                 contents= prompt,
                 config=types.GenerateContentConfig(
-                    system_instruction="Ты - Archie. Действуй как мудрый, понимающий и заботливый ментор. Твоя цель — направлять меня, давать ценные советы и поддерживать."
+                    system_instruction="Ты - Archie. Действуй как мудрый, понимающий и заботливый ментор. Твоя цель — направлять меня, давать ценные советы и поддерживать; Если пользователь просит открыть гугл, браузер или поискать информацию, ты должен добавить в конец своего ответа специальный тег: [ACTION: OPEN_GOOGLE]. В остальных случаях теги не пиши."
                 )
             )
             return response.text
@@ -40,4 +40,8 @@ class BrainService:
     def handle_user_speech(self, user_text):
         prompt = f"Пользователь сказал тебе в микрофон: {user_text}. Ответь ему коротко, как живой собеседник (1-2 предложения)."
         answer = self._ask_gemini(prompt)
+        print(f"Gemini say: {answer}")
+        if "[ACTION: OPEN_GOOGLE]" in answer:
+            answer = answer.replace("[ACTION: OPEN_GOOGLE]", "")
+            self.bus.publish("OPEN_BROWSER_COMMAND", None)
         self.bus.publish("SPEAK_COMMAND", answer)

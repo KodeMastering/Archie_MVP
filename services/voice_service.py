@@ -17,7 +17,8 @@ class VoiceService:
             repo_or_dir='snakers4/silero-models',
             model='silero_tts',
             language='ru',
-            speaker='v4_ru'
+            speaker='v4_ru',
+            verbose = False
         )
         self.model.to(self.device)
         self.sample_rate = 48000
@@ -43,11 +44,11 @@ class VoiceService:
                     text=text,
                     speaker=self.speaker,
                     sample_rate=self.sample_rate
+
                 )
 
                 # 2. Воспроизводим звук через колонки
                 sd.play(audio.numpy(), self.sample_rate)
                 sd.wait()  # Ждем, пока фраза договорится до конца
-
             except Exception as e:
                 print(f"[ГОЛОС] Ошибка генерации: {e}")

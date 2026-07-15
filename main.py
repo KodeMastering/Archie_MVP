@@ -5,6 +5,7 @@ from services.proactivity_engine import ProactivityEngine
 from services.brain_service import BrainService
 from services.vision_service import VisionService
 from services.Hearing_service import HearingService
+from services.action_service import ActionService
 
 bus = EventBus()
 voice = VoiceService()
@@ -15,6 +16,8 @@ Proactivity = ProactivityEngine(bus)
 Proactivity.setup_subscriptions()
 Vision = VisionService(bus)
 Hearing = HearingService(bus)
+Action = ActionService(bus)
+Action.setup_subscriptions()
 
 
 def on_app_opened(data):
