@@ -24,7 +24,8 @@ class HearingService:
                     text = recognizer.recognize_google(audio, language="ru-RU")
                     if text.strip():  # Если текст не пустой
                         print(f"[СЛУХ] Пользователь сказал: {text}")
-                        self.bus.publish("USER_SPOKE", text)
+                        if text.strip() and not self.bus.state["is_speaking"]:
+                            self.bus.publish("USER_SPOKE", text)
 
                 except sr.UnknownValueError:
                     pass

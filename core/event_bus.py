@@ -4,6 +4,7 @@ class EventBus:
 
     def __init__(self):
         self.subscribers: Dict[str, List[Callable]] = {}
+        self.state = {"is_speaking": False}
 
     def subscribe(self, event_type: str, callback: Callable):
         if event_type not in self.subscribers:

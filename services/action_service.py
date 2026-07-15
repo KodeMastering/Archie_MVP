@@ -10,5 +10,5 @@ class ActionService:
 
 
     def actions(self, command):
-        webbrowser.open("https://google.com")
-        print("[ДЕЙСТВИЕ] Открываю браузер")
+        webbrowser.open(command)
+        print(f"[ДЕЙСТВИЕ] Открываю: {command}")

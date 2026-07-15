@@ -47,8 +47,10 @@ class VoiceService:
 
                 )
 
+                self.bus.state["is_speaking"] = True
                 # 2. Воспроизводим звук через колонки
                 sd.play(audio.numpy(), self.sample_rate)
                 sd.wait()  # Ждем, пока фраза договорится до конца
+                self.bus.state["is_speaking"] = False
             except Exception as e:
                 print(f"[ГОЛОС] Ошибка генерации: {e}")
